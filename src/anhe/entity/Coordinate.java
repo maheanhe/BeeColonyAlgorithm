@@ -1,22 +1,25 @@
 package anhe.entity;
+
 /**
  * 坐标实体
+ * 
  * @author 张文浩
  *
  */
 public class Coordinate {
 
-	private Integer id;//唯一标识
-	private Integer x;//横坐标
-	private Integer y;//纵坐标
-	private String name;//地点名称
-	private Integer flag;//-1,起点；0，中间点；1，终点
+	private Integer id;// 唯一标识
+	private Integer x;// 横坐标
+	private Integer y;// 纵坐标
+	private String name;// 地点名称
+	private Integer flag;// -1,起点；0，中间点；1，终点
+	private int CID;// 计算用id
 
 	/**
 	 * 
-	 * @param id 唯一标识
-	 * @param x	横坐标
-	 * @param y 纵坐标
+	 * @param id   唯一标识
+	 * @param x    横坐标
+	 * @param y    纵坐标
 	 * @param name 地点名称
 	 * @param flag -1,起点；0，中间点；1，终点
 	 */
@@ -26,6 +29,14 @@ public class Coordinate {
 		this.y = y;
 		this.name = name;
 		this.flag = flag;
+	}
+
+	public int getCID() {
+		return CID;
+	}
+
+	public void setCID(int cID) {
+		CID = cID;
 	}
 
 	public Integer getId() {

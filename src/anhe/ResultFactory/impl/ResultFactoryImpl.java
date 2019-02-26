@@ -15,12 +15,12 @@ public class ResultFactoryImpl implements ResultFactory {
 
 	private List<Coordinate> coordinateList;
 	private AlgorithmContainer algorithmContainer;
-	private LinkedList<Integer> idList = new LinkedList<>();
+	private LinkedList<Integer> idList = new LinkedList<>();//id集
 	private ConcurrentSkipListSet<String> resultSet_idList = new ConcurrentSkipListSet<String>();
 	private Object lock = new Object();
 
 	public ResultFactoryImpl(List<Coordinate> coordinateList, AlgorithmContainer algorithmContainer) {
-		setParameter(coordinateList,algorithmContainer);
+		setParameter(coordinateList, algorithmContainer);
 	}
 
 	public ResultFactoryImpl() {
@@ -31,7 +31,14 @@ public class ResultFactoryImpl implements ResultFactory {
 	public void setParameter(List<Coordinate> coordinateList, AlgorithmContainer algorithmContainer) {
 		this.coordinateList = coordinateList;
 		this.algorithmContainer = algorithmContainer;
+		this.computeCoordinateToCoordinate_Cache = new Double[coordinateList.size()][coordinateList.size()];
+		
+		//设置计算用CID
+		for (int i = 0; i < coordinateList.size(); i++) {
+			coordinateList.get(i).setCID(i);
+		}
 
+		//设置id集idList
 		int flag = 0;
 		int id = 0;
 		int firstId = 0;
@@ -50,9 +57,10 @@ public class ResultFactoryImpl implements ResultFactory {
 		idList.addFirst(firstId);
 		idList.addLast(lastId);
 	}
-	
+
 	/**
-	 *  无参生成List<Integer>
+	 * 无参生成List<Integer>
+	 * 
 	 * @return
 	 */
 	protected List<Integer> generatResult() {
@@ -77,7 +85,8 @@ public class ResultFactoryImpl implements ResultFactory {
 	}
 
 	/**
-	 *  有参生成List<Integer>
+	 * 有参生成List<Integer>
+	 * 
 	 * @param f_result_idList
 	 * @return
 	 */
@@ -104,7 +113,8 @@ public class ResultFactoryImpl implements ResultFactory {
 	}
 
 	/**
-	 *  计算Result的value
+	 * 计算Result的value
+	 * 
 	 * @param result_coordinateList
 	 * @return
 	 */
@@ -120,18 +130,28 @@ public class ResultFactoryImpl implements ResultFactory {
 		return value;
 	}
 
+	private Double[][] computeCoordinateToCoordinate_Cache;//坐标之间距离的缓存
+	
 	/**
-	 *  计算两坐标之间的距离
+	 * 计算两坐标之间的距离
+	 * 
 	 * @param c1
 	 * @param c2
 	 * @return
 	 */
 	protected double computeCoordinateToCoordinate(Coordinate c1, Coordinate c2) {
-		return Math.pow(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2), 0.5);
+		Double value = computeCoordinateToCoordinate_Cache[c1.getCID()][c2.getCID()];
+		if(null == value) { 
+			value = Math.pow(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2), 0.5);
+			computeCoordinateToCoordinate_Cache[c1.getCID()][c2.getCID()] = value;
+			computeCoordinateToCoordinate_Cache[c2.getCID()][c1.getCID()] = value;
+		}
+		return value;
 	}
 
 	/**
-	 *  判断是否包含List<Integer>
+	 * 判断是否包含List<Integer>
+	 * 
 	 * @param result_idList
 	 */
 	protected void isContains(List<Integer> result_idList) {
@@ -151,6 +171,7 @@ public class ResultFactoryImpl implements ResultFactory {
 
 	/**
 	 * 生成List<Coordinate>
+	 * 
 	 * @param result_idList
 	 * @return
 	 */
